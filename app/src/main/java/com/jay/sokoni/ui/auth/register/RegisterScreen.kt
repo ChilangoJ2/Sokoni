@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jay.sokoni.domain.model.User
@@ -12,6 +13,7 @@ import com.jay.sokoni.ui.auth.AuthUiState
 import com.jay.sokoni.ui.auth.AuthViewModel
 import com.jay.sokoni.ui.components.SokoniPrimaryButton
 import com.jay.sokoni.ui.components.SokoniTextField
+import com.jay.sokoni.ui.theme.SokoniTheme
 
 @Composable
 fun RegisterScreen(
@@ -19,10 +21,6 @@ fun RegisterScreen(
     onNavigateToLogin: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(uiState) {
@@ -30,6 +28,27 @@ fun RegisterScreen(
             onRegisterSuccess()
         }
     }
+
+    RegisterContent(
+        uiState = uiState,
+        onRegisterClick = { name, email, phone, password ->
+            val user = User(name = name, email = email, phone = phone)
+            viewModel.register(user, password)
+        },
+        onNavigateToLogin = onNavigateToLogin
+    )
+}
+
+@Composable
+fun RegisterContent(
+    uiState: AuthUiState,
+    onRegisterClick: (String, String, String, String) -> Unit,
+    onNavigateToLogin: () -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -77,14 +96,7 @@ fun RegisterScreen(
         } else {
             SokoniPrimaryButton(
                 text = "Register",
-                onClick = {
-                    val user = User(
-                        name = name,
-                        email = email,
-                        phone = phone
-                    )
-                    viewModel.register(user, password)
-                }
+                onClick = { onRegisterClick(name, email, phone, password) }
             )
             Spacer(modifier = Modifier.height(16.dp))
             TextButton(onClick = onNavigateToLogin) {
@@ -94,10 +106,22 @@ fun RegisterScreen(
 
         if (uiState is AuthUiState.Error) {
             Text(
-                text = (uiState as AuthUiState.Error).message,
+                text = uiState.message,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(top = 16.dp)
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RegisterPreview() {
+    SokoniTheme {
+        RegisterContent(
+            uiState = AuthUiState.Idle,
+            onRegisterClick = { _, _, _, _ -> },
+            onNavigateToLogin = {}
+        )
     }
 }

@@ -8,11 +8,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jay.sokoni.domain.model.Product
+import com.jay.sokoni.domain.model.ProductVariant
 import com.jay.sokoni.ui.components.SokoniCard
 import com.jay.sokoni.ui.components.SokoniLoading
+import com.jay.sokoni.ui.theme.SokoniTheme
 
 @Composable
 fun ProductListScreen(
@@ -27,6 +30,19 @@ fun ProductListScreen(
         viewModel.loadProducts(vendorId)
     }
 
+    ProductListContent(
+        uiState = uiState,
+        onAddProduct = onAddProduct,
+        onEditProduct = onEditProduct
+    )
+}
+
+@Composable
+fun ProductListContent(
+    uiState: ProductUiState,
+    onAddProduct: () -> Unit,
+    onEditProduct: (Product) -> Unit
+) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onAddProduct) {
@@ -38,7 +54,7 @@ fun ProductListScreen(
             when (uiState) {
                 is ProductUiState.Loading -> SokoniLoading()
                 is ProductUiState.Success -> {
-                    val products = (uiState as ProductUiState.Success).products
+                    val products = uiState.products
                     LazyColumn(contentPadding = PaddingValues(16.dp)) {
                         items(products) { product ->
                             ProductItem(product = product, onClick = { onEditProduct(product) })
@@ -46,7 +62,7 @@ fun ProductListScreen(
                         }
                     }
                 }
-                is ProductUiState.Error -> Text((uiState as ProductUiState.Error).message)
+                is ProductUiState.Error -> Text(uiState.message)
                 else -> Unit
             }
         }
@@ -64,5 +80,22 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
                 Text(text = "From KSh ${product.variants.minOf { it.price }}", color = MaterialTheme.colorScheme.secondary)
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProductListPreview() {
+    SokoniTheme {
+        ProductListContent(
+            uiState = ProductUiState.Success(
+                products = listOf(
+                    Product(name = "20L Water", category = "Water", variants = listOf(ProductVariant(price = 150.0))),
+                    Product(name = "6KG Gas", category = "Gas", variants = listOf(ProductVariant(price = 1200.0)))
+                )
+            ),
+            onAddProduct = {},
+            onEditProduct = {}
+        )
     }
 }

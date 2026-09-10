@@ -11,12 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.jay.sokoni.ui.theme.SokoniBlack
 import com.jay.sokoni.ui.theme.SokoniGold
 import com.jay.sokoni.ui.theme.SokoniGreen
 import com.jay.sokoni.ui.theme.SokoniRed
+import com.jay.sokoni.ui.theme.SokoniTheme
 import com.jay.sokoni.ui.theme.SokoniWhite
 
 @Composable
@@ -116,5 +117,21 @@ fun SokoniStatusIndicator(
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(text = status, style = MaterialTheme.typography.labelMedium)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ComponentsPreview() {
+    SokoniTheme {
+        Column(modifier = Modifier.padding(16.dp)) {
+            SokoniBadge(text = "Verified")
+            Spacer(modifier = Modifier.height(8.dp))
+            SokoniStatusIndicator(status = "Active", isActive = true)
+            Spacer(modifier = Modifier.height(8.dp))
+            SokoniCard(modifier = Modifier.fillMaxWidth()) {
+                Text("This is a Sokoni Card", modifier = Modifier.padding(16.dp))
+            }
+        }
     }
 }

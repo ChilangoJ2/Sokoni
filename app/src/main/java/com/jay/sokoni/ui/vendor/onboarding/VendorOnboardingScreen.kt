@@ -5,17 +5,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jay.sokoni.domain.model.Vendor
 import com.jay.sokoni.ui.components.*
+import com.jay.sokoni.ui.theme.SokoniTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VendorOnboardingScreen(
     onComplete: () -> Unit,
     viewModel: VendorOnboardingViewModel = hiltViewModel()
 ) {
-    var currentStep by remember { mutableStateOf(1) }
     val uiState by viewModel.uiState.collectAsState()
     val vendor by viewModel.currentVendor.collectAsState()
 
@@ -24,6 +25,26 @@ fun VendorOnboardingScreen(
             onComplete()
         }
     }
+
+    OnboardingContent(
+        uiState = uiState,
+        vendor = vendor,
+        onUpdateVendor = { viewModel.updateVendor(it) },
+        onCaptureLocation = { viewModel.captureLocation() },
+        onSubmit = { viewModel.submitOnboarding() }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OnboardingContent(
+    uiState: OnboardingUiState,
+    vendor: Vendor,
+    onUpdateVendor: ((Vendor) -> Vendor) -> Unit,
+    onCaptureLocation: () -> Unit,
+    onSubmit: () -> Unit
+) {
+    var currentStep by remember { mutableIntStateOf(1) }
 
     Scaffold(
         topBar = {
@@ -36,29 +57,26 @@ fun VendorOnboardingScreen(
             when (currentStep) {
                 1 -> BusinessDetailsStep(
                     vendor = vendor,
-                    onNext = { 
-                        viewModel.updateVendor { it.copy(storeName = it.storeName) } // Simple validation check would go here
-                        currentStep = 2 
-                    },
-                    onUpdate = { viewModel.updateVendor { it } }
+                    onNext = { currentStep = 2 },
+                    onUpdate = { onUpdateVendor { it } }
                 )
                 2 -> LocationStep(
                     vendor = vendor,
-                    onCaptureLocation = { viewModel.captureLocation() },
+                    onCaptureLocation = onCaptureLocation,
                     onNext = { currentStep = 3 },
                     onBack = { currentStep = 1 }
                 )
                 3 -> ReviewStep(
                     vendor = vendor,
                     isLoading = uiState is OnboardingUiState.Loading,
-                    onSubmit = { viewModel.submitOnboarding() },
+                    onSubmit = onSubmit,
                     onBack = { currentStep = 2 }
                 )
             }
-            
+
             if (uiState is OnboardingUiState.Error) {
                 Text(
-                    text = (uiState as OnboardingUiState.Error).message,
+                    text = uiState.message,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)
                 )
@@ -69,9 +87,9 @@ fun VendorOnboardingScreen(
 
 @Composable
 fun BusinessDetailsStep(
-    vendor: com.jay.sokoni.domain.model.Vendor,
+    vendor: Vendor,
     onNext: () -> Unit,
-    onUpdate: (com.jay.sokoni.domain.model.Vendor) -> Unit
+    onUpdate: (Vendor) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
         SokoniTextField(
@@ -92,7 +110,7 @@ fun BusinessDetailsStep(
 
 @Composable
 fun LocationStep(
-    vendor: com.jay.sokoni.domain.model.Vendor,
+    vendor: Vendor,
     onCaptureLocation: () -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit
@@ -101,13 +119,13 @@ fun LocationStep(
         Text("We need your store location for deliveries.")
         Spacer(modifier = Modifier.height(16.dp))
         SokoniSecondaryButton(text = "Capture GPS Location", onClick = onCaptureLocation)
-        
+
         vendor.location?.let {
             Spacer(modifier = Modifier.height(16.dp))
             Text("Location Captured: ${it.latitude}, ${it.longitude}")
             Text("Accuracy: ${it.accuracy}m")
         }
-        
+
         Spacer(modifier = Modifier.weight(1f))
         Row(modifier = Modifier.fillMaxWidth()) {
             SokoniSecondaryButton(text = "Back", onClick = onBack, modifier = Modifier.weight(1f))
@@ -119,7 +137,7 @@ fun LocationStep(
 
 @Composable
 fun ReviewStep(
-    vendor: com.jay.sokoni.domain.model.Vendor,
+    vendor: Vendor,
     isLoading: Boolean,
     onSubmit: () -> Unit,
     onBack: () -> Unit
@@ -130,7 +148,7 @@ fun ReviewStep(
         Text("Store: ${vendor.storeName}")
         Text("Business: ${vendor.businessName}")
         Text("Location: ${vendor.location?.latitude}, ${vendor.location?.longitude}")
-        
+
         Spacer(modifier = Modifier.weight(1f))
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -141,5 +159,19 @@ fun ReviewStep(
                 SokoniPrimaryButton(text = "Submit for Approval", onClick = onSubmit, modifier = Modifier.weight(1f))
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OnboardingPreview() {
+    SokoniTheme {
+        OnboardingContent(
+            uiState = OnboardingUiState.Idle,
+            vendor = Vendor(storeName = "MJC Store"),
+            onUpdateVendor = {},
+            onCaptureLocation = {},
+            onSubmit = {}
+        )
     }
 }
