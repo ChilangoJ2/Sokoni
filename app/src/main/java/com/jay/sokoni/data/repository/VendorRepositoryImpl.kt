@@ -42,4 +42,13 @@ class VendorRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun submitRating(rating: com.jay.sokoni.domain.model.Rating): Result<Unit> {
+        return try {
+            firestore.collection("ratings").document(rating.orderId).set(rating).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

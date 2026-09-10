@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jay.sokoni.domain.model.Product
 import com.jay.sokoni.domain.model.Vendor
+import com.jay.sokoni.ui.components.SokoniBadge
 import com.jay.sokoni.ui.components.SokoniCard
 import com.jay.sokoni.ui.components.SokoniLoading
 import com.jay.sokoni.ui.theme.SokoniTheme
@@ -117,7 +119,13 @@ fun VendorHeader(
                 color = MaterialTheme.colorScheme.surfaceVariant
             ) {}
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = vendor.storeName, style = MaterialTheme.typography.headlineSmall)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = vendor.storeName, style = MaterialTheme.typography.headlineSmall)
+                if (vendor.isVerified) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    SokoniBadge(text = "Verified Seller", color = com.jay.sokoni.ui.theme.SokoniGreen, textColor = com.jay.sokoni.ui.theme.SokoniWhite)
+                }
+            }
             Text(text = vendor.category, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary)
             Text(text = vendor.description, style = MaterialTheme.typography.bodySmall)
 

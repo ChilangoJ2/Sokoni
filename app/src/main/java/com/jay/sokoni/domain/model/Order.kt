@@ -1,7 +1,7 @@
 package com.jay.sokoni.domain.model
 
 enum class OrderStatus {
-    PENDING, ACCEPTED, PREPARING, READY, COMPLETED, CANCELLED
+    PENDING, ACCEPTED, PREPARING, READY, OUT_FOR_DELIVERY, COMPLETED, CANCELLED
 }
 
 enum class DeliveryStatus {
@@ -18,7 +18,15 @@ data class OrderItem(
     val variantName: String = "",
     val unitPrice: Double = 0.0,
     val quantity: Int = 1,
-    val lineTotal: Double = 0.0
+    val lineTotal: Double = 0.0,
+    val isConfirmedByVendor: Boolean = false
+)
+
+data class RiderDetails(
+    val name: String = "",
+    val phone: String = "",
+    val vehicleRegistration: String = "",
+    val imageUrl: String? = null
 )
 
 data class Order(
@@ -36,7 +44,7 @@ data class Order(
     
     // Fulfillment
     val isDelivery: Boolean = true,
-    val deliveryLocation: UserLocation? = null, // Snapshot of location at time of order
+    val deliveryLocation: UserLocation? = null,
     
     // Statuses
     val status: OrderStatus = OrderStatus.PENDING,
@@ -45,6 +53,18 @@ data class Order(
     val deliveryStatus: DeliveryStatus? = null,
     val pickupStatus: PickupStatus? = null,
     
+    // Delivery Logistics
+    val riderDetails: RiderDetails? = null,
+    val estimatedArrivalTime: Long? = null,
+    
+    // Cancellation
+    val cancellationReason: String? = null,
+    val cancelledBy: String? = null, // "VENDOR" or "CUSTOMER" or "SYSTEM"
+
     val createdAt: Long = 0L,
-    val updatedAt: Long = 0L
+    val updatedAt: Long = 0L,
+    val acceptedAt: Long? = null,
+    val preparedAt: Long? = null,
+    val dispatchedAt: Long? = null,
+    val completedAt: Long? = null
 )

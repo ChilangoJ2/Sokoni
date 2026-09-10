@@ -12,11 +12,15 @@ import com.jay.sokoni.ui.auth.register.RegisterScreen
 import com.jay.sokoni.ui.customer.cart.CartScreen
 import com.jay.sokoni.ui.customer.checkout.CheckoutScreen
 import com.jay.sokoni.ui.customer.home.CustomerHomeScreen
+import com.jay.sokoni.ui.customer.orders.OrderListScreen
+import com.jay.sokoni.ui.customer.orders.OrderRatingScreen
 import com.jay.sokoni.ui.customer.product.ProductDetailScreen
 import com.jay.sokoni.ui.customer.search.SearchScreen
 import com.jay.sokoni.ui.customer.vendor.VendorStoreScreen
 import com.jay.sokoni.ui.vendor.home.VendorHomeScreen
 import com.jay.sokoni.ui.vendor.onboarding.VendorOnboardingScreen
+import com.jay.sokoni.ui.vendor.orders.VendorOrderDetailScreen
+import com.jay.sokoni.ui.vendor.orders.VendorOrderListScreen
 import com.jay.sokoni.ui.vendor.products.AddEditProductScreen
 import com.jay.sokoni.ui.vendor.products.ProductListScreen
 
@@ -97,14 +101,42 @@ fun NavGraph(
             CheckoutScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onOrderSuccess = {
-                    navController.navigate(Screen.CustomerHome.route) {
-                        popUpTo(Screen.CustomerHome.route) { inclusive = true }
+                    navController.navigate(Screen.OrderList.route) {
+                        popUpTo(Screen.CustomerHome.route)
                     }
                 }
             )
         }
+        composable(Screen.OrderList.route) {
+            OrderListScreen(onOrderClick = { /* Navigate to details or rating if completed */ })
+        }
+        composable(
+            route = Screen.OrderRating.route,
+            arguments = listOf(
+                navArgument("vendorId") { type = NavType.StringType },
+                navArgument("orderId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val vendorId = backStackEntry.arguments?.getString("vendorId") ?: ""
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+            OrderRatingScreen(
+                vendorId = vendorId,
+                orderId = orderId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
         composable(Screen.VendorHome.route) {
-            VendorHomeScreen()
+            VendorOrderListScreen(onOrderClick = { navController.navigate(Screen.VendorOrderDetail.createRoute(it)) })
+        }
+        composable(
+            route = Screen.VendorOrderDetail.route,
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+            VendorOrderDetailScreen(
+                orderId = orderId,
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
         composable(Screen.VendorOnboarding.route) {
             VendorOnboardingScreen(onComplete = {

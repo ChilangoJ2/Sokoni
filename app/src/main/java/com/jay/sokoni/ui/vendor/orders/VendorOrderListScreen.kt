@@ -19,12 +19,14 @@ import com.jay.sokoni.ui.theme.SokoniTheme
 
 @Composable
 fun VendorOrderListScreen(
+    onOrderClick: (String) -> Unit,
     viewModel: VendorOrderViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     VendorOrderListContent(
         uiState = uiState,
+        onOrderClick = onOrderClick,
         onUpdateStatus = { id, status -> viewModel.updateStatus(id, status) }
     )
 }
@@ -33,6 +35,7 @@ fun VendorOrderListScreen(
 @Composable
 fun VendorOrderListContent(
     uiState: VendorOrderUiState,
+    onOrderClick: (String) -> Unit,
     onUpdateStatus: (String, OrderStatus) -> Unit
 ) {
     Scaffold(
@@ -53,7 +56,7 @@ fun VendorOrderListContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(uiState.orders) { order ->
-                    VendorOrderItem(order = order, onUpdateStatus = onUpdateStatus)
+                    VendorOrderItem(order = order, onClick = { onOrderClick(order.orderId) }, onUpdateStatus = onUpdateStatus)
                 }
             }
         }
@@ -61,8 +64,8 @@ fun VendorOrderListContent(
 }
 
 @Composable
-fun VendorOrderItem(order: Order, onUpdateStatus: (String, OrderStatus) -> Unit) {
-    SokoniCard {
+fun VendorOrderItem(order: Order, onClick: () -> Unit, onUpdateStatus: (String, OrderStatus) -> Unit) {
+    SokoniCard(onClick = onClick) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "Order #${order.orderId.takeLast(6)}", style = MaterialTheme.typography.titleMedium)
@@ -119,6 +122,7 @@ fun VendorOrderListPreview() {
                     )
                 )
             ),
+            onOrderClick = {},
             onUpdateStatus = { _, _ -> }
         )
     }

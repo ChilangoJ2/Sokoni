@@ -8,4 +8,5 @@ interface VendorRepository {
     fun getVendor(vendorId: String): Flow<Vendor?>
     suspend fun saveVendor(vendor: Vendor): Result<Unit>
     suspend fun updateVendorStatus(vendorId: String, status: VendorStatus): Result<Unit>
+    suspend fun submitRating(rating: com.jay.sokoni.domain.model.Rating): Result<Unit>
 }

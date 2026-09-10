@@ -13,10 +13,17 @@ sealed class Screen(val route: String) {
     }
     object Cart : Screen("cart")
     object Checkout : Screen("checkout")
+    object OrderList : Screen("order_list")
+    object OrderRating : Screen("order_rating/{vendorId}/{orderId}") {
+        fun createRoute(vendorId: String, orderId: String) = "order_rating/$vendorId/$orderId"
+    }
 
     object VendorHome : Screen("vendor_home")
     object VendorOnboarding : Screen("vendor_onboarding")
     object VendorProducts : Screen("vendor_products")
+    object VendorOrderDetail : Screen("vendor_order_detail/{orderId}") {
+        fun createRoute(orderId: String) = "vendor_order_detail/$orderId"
+    }
     object AddEditProduct : Screen("add_edit_product/{productId}") {
         fun createRoute(productId: String = "new") = "add_edit_product/$productId"
     }

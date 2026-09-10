@@ -47,7 +47,7 @@ class VendorOrderViewModel @Inject constructor(
 
     fun updateStatus(orderId: String, status: OrderStatus) {
         viewModelScope.launch {
-            orderRepository.updateOrderStatus(orderId, status.name)
+            orderRepository.updateOrderStatus(orderId, status)
         }
     }
 }

@@ -18,6 +18,10 @@ data class Vendor(
     val ownerDetails: Map<String, String> = emptyMap(),
     val payoutProfile: Map<String, String> = emptyMap(),
     val status: VendorStatus = VendorStatus.DRAFT,
+    val isVerified: Boolean = false,
+    val rating: Double = 0.0,
+    val reviewCount: Int = 0,
+    val completedOrdersCount: Int = 0,
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L
 )
