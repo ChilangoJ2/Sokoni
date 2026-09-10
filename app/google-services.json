@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "480226986693",
+    "project_id": "sokonimjc",
+    "storage_bucket": "sokonimjc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:480226986693:android:09d22dd5a70abb2c33beac",
+        "android_client_info": {
+          "package_name": "com.jay.sokoni"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "480226986693-s34t93u32nhmfpgjp9asf4i6iefgt3ck.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH7Iw01ujAIxu1bYrd_cYtpWECEjMNVp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "480226986693-s34t93u32nhmfpgjp9asf4i6iefgt3ck.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
